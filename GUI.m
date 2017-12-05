@@ -78,6 +78,7 @@ function importBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to importBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+uiimport('-file');
 
 
 % --- Executes on button press in plotFftBtn.
@@ -86,4 +87,5 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 axes(handles.fftAxes);
+plot(s);
 title('FFT plot');
