@@ -73,6 +73,7 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
+
 % --- Executes on button press in importBtn.
 function importBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to importBtn (see GCBO)
@@ -87,5 +88,6 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 axes(handles.fftAxes);
-plot(s);
+handles.steps = evalin('base','steps');
+plot(handles.steps);
 title('FFT plot');
