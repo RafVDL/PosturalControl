@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 28-Nov-2017 15:11:04
+% Last Modified by GUIDE v2.5 29-Nov-2017 12:36:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,11 +78,12 @@ function importBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to importBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp("Btn pushed");
-[fileName, path] = uigetfile({'*.xlsx'; '*.xlx'}, 'Select data');
-if isequal(fileName, 0)
-    disp('Select canceled');
-else
-    fprintf('Filename: %s\nPath: %s', fileName, path);
-    dataFile = xlsread(strcat(path, fileName))
-end;
+
+
+% --- Executes on button press in plotFftBtn.
+function plotFftBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to plotFftBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+axes(handles.fftAxes);
+title('FFT plot');
