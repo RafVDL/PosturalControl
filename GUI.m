@@ -89,5 +89,18 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 axes(handles.fftAxes);
 handles.steps = evalin('base','steps');
-plot(handles.steps);
+averageData = sgolayfilt(handles.steps, 1, 31);
+diffData = handles.steps - averageData;
+Fs = 250;
+T = 1/Fs;
+L = length(diffData);
+Y = fft(diffData);
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = Fs*(0:(L/2))/L;
+t = 1:L;
+plot(f, P1);
 title('FFT plot');
+xlabel('f (Hz)');
+ylabel('|P1(f)|');
