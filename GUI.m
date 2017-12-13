@@ -98,25 +98,23 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to plotFftBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+axes(handles.fftAxes);
 handles.rawData = evalin('base', handles.baseFileName);
-Y = fft(handles.rawData);
-Fs = 250;            % Sampling frequency                    
-T = 1/Fs;             % Sampling period       
-L = 878;             % Length of signal
-t = (0:L-1)*T;        % Time vector
-
+averageData = sgolayfilt(handles.rawData, 1, 31);
+diffData = handles.rawData - averageData;
+Fs = 250;
+T = 1/Fs;
+L = length(diffData);
+Y = fft(diffData);
 P2 = abs(Y/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
-
 f = Fs*(0:(L/2))/L;
-plot(f,P1) 
-
-axes(handles.fftAxes);
-x=linspace(0, 2*pi, 878);
-plot(x, P1);
+t = 1:L;
+plot(f, P1);
 title('FFT plot');
+xlabel('f (Hz)');
+ylabel('|P1(f)|');
 
 
 % --- Executes on button press in plotRawDataBtn.
