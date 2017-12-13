@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 05-Dec-2017 15:36:51
+% Last Modified by GUIDE v2.5 13-Dec-2017 12:31:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,6 +54,7 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for GUI
 handles.output = hObject;
+handles.selectedWindow = Window.None;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -99,18 +100,10 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 axes(handles.fftAxes);
-handles.rawData = evalin('base', handles.baseFileName);
-averageData = sgolayfilt(handles.rawData, 1, 31);
-diffData = handles.rawData - averageData;
-Fs = 250;
-T = 1/Fs;
-L = length(diffData);
-Y = fft(diffData);
-P2 = abs(Y/L);
-P1 = P2(1:L/2+1);
-P1(2:end-1) = 2*P1(2:end-1);
-f = Fs*(0:(L/2))/L;
-t = 1:L;
+handles.steps = evalin('base','steps');
+averageData = sgolayfilt(handles.steps, 3, 31);
+diffData = handles.steps - averageData;
+[f, P1] = getfft(diffData, handles.selectedWindow);
 plot(f, P1);
 title('FFT plot');
 xlabel('f (Hz)');
@@ -126,3 +119,49 @@ handles.rawData = evalin('base', handles.baseFileName);
 axes(handles.rawDataAxes);
 x = linspace(0, length(handles.rawData) - 1, length(handles.rawData));
 plot(x, handles.rawData);
+
+
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+str = get(hObject, 'String');
+val = get(hObject, 'Value');
+switch str{val}
+    case 'None'
+        handles.selectedWindow = Window.None;
+    case 'Bartlett'
+        handles.selectedWindow = Window.Bartlett;
+    case 'Blackman'
+        handles.selectedWindow = Window.Blackman;
+    case 'Boxcar'
+        handles.selectedWindow = Window.Boxcar;
+    case 'Hamming'
+        handles.selectedWindow = Window.Hamming;
+    case 'Hann'
+        handles.selectedWindow = Window.Hann;
+    case 'Taylor'
+        handles.selectedWindow = Window.Taylor;
+    case 'Triangle'
+        handles.selectedWindow = Window.Triang;
+    otherwise
+        handles.selectedWindow = Window.None;
+end
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
