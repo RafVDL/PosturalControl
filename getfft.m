@@ -1,5 +1,4 @@
-function [f, P1] = getfft(data, window)
-    Fs = 250;
+function [f, P1] = getfft(data, Fs, window)
     T = 1/Fs;
     L = length(data);
     switch (window)

@@ -103,7 +103,7 @@ axes(handles.fftAxes);
 handles.steps = evalin('base','steps');
 averageData = sgolayfilt(handles.steps, 3, 31);
 diffData = handles.steps - averageData;
-[f, P1] = getfft(diffData, handles.selectedWindow);
+[f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
 plot(f, P1);
 title('FFT plot');
 xlabel('f (Hz)');
