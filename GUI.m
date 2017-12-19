@@ -99,8 +99,8 @@ function plotFftBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to plotFftBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+handles.steps = table2array(evalin('base', handles.baseFileName));
 axes(handles.fftAxes);
-handles.steps = evalin('base','steps');
 averageData = sgolayfilt(handles.steps, 3, 31);
 diffData = handles.steps - averageData;
 [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
@@ -115,7 +115,7 @@ function plotRawDataBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to plotRawDataBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.rawData = evalin('base', handles.baseFileName);
+handles.rawData = table2array(evalin('base', handles.baseFileName));
 axes(handles.rawDataAxes);
 x = linspace(0, length(handles.rawData) - 1, length(handles.rawData));
 plot(x, handles.rawData);
