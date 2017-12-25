@@ -80,8 +80,13 @@ function importBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to importBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Clear all
 evalin('base', 'clear');
 evalin('base', 'clc');
+axes(handles.fftAxes); cla;
+axes(handles.lowFreqAxes); cla;
+axes(handles.highFreqAxes); cla;
 
 filename = uigetfile('.xlsx');
 [folder, baseFileName, extension] = fileparts(filename);
@@ -110,19 +115,28 @@ plot(f, P1);
 title('FFT plot');
 xlabel('f (Hz)');
 ylabel('|P1(f)|');
+%------ifft test------
+axes(handles.lowFreqAxes);
+hold on;
+time_data = getIfft(f, P1, handles.LFLB, handles.LFUB);
+plot(time_data);
+
 
 
 % --- Executes on button press in plotRawDataBtn.
 function plotRawDataBtn_Callback(hObject, eventdata, handles)
 rawData = getRawData(handles);
 if rawData == -1
-    msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
+    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
     return;
 end
 
 axes(handles.lowFreqAxes);
+hold on;
 x = linspace(0, length(rawData) - 1, length(rawData));
 plot(x, rawData);
+xlabel('Samples');
+ylabel('Deviation  [cm]');
 
 
 % --- Executes on selection change in popupmenu1.

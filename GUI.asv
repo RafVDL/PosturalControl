@@ -80,8 +80,13 @@ function importBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to importBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Clear all
 evalin('base', 'clear');
 evalin('base', 'clc');
+axes(handles.fftAxes); cla;
+axes(handles.lowFreqAxes); cla;
+axes(handles.highFreqAxes); cla;
 
 filename = uigetfile('.xlsx');
 [folder, baseFileName, extension] = fileparts(filename);
@@ -110,19 +115,29 @@ plot(f, P1);
 title('FFT plot');
 xlabel('f (Hz)');
 ylabel('|P1(f)|');
+%------ifft test------
+axes(handles.lowFreqAxes);
+hold on;
+time_data = getIfft(f, P1, handles.LFLB, handles.LFUB);
+x = linspace(0, length(time_data) - 1, length(time_data));
+plot(x, time_data);
+
 
 
 % --- Executes on button press in plotRawDataBtn.
 function plotRawDataBtn_Callback(hObject, eventdata, handles)
 rawData = getRawData(handles);
 if rawData == -1
-    msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
+    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
     return;
 end
 
 axes(handles.lowFreqAxes);
+hold on;
 x = linspace(0, length(rawData) - 1, length(rawData));
 plot(x, rawData);
+xlabel('Samples');
+ylabel('Deviation  [cm]');
 
 
 % --- Executes on selection change in popupmenu1.
@@ -188,10 +203,9 @@ function LFLBound_Callback(hObject, eventdata, handles)
 % hObject    handle to LFLBound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of LFLBound as text
-%        str2double(get(hObject,'String')) returns contents of LFLBound as a double
-handles.LFLB = str2double(get(hObject, 
+handles.LFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function LFLBound_CreateFcn(hObject, eventdata, handles)
@@ -211,9 +225,9 @@ function LFUBound_Callback(hObject, eventdata, handles)
 % hObject    handle to LFUBound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of LFUBound as text
-%        str2double(get(hObject,'String')) returns contents of LFUBound as a double
+handles.LFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -234,9 +248,9 @@ function HFLBound_Callback(hObject, eventdata, handles)
 % hObject    handle to HFLBound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of HFLBound as text
-%        str2double(get(hObject,'String')) returns contents of HFLBound as a double
+handles.HFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -255,11 +269,9 @@ end
 
 function HLFUBound_Callback(hObject, eventdata, handles)
 % hObject    handle to HLFUBound (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of HLFUBound as text
-%        str2double(get(hObject,'String')) returns contents of HLFUBound as a double
+handles.HFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
