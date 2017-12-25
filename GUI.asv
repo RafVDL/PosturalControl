@@ -101,32 +101,34 @@ guidata(hObject, handles);
 
 % --- Executes on button press in plotFftBtn.
 function plotFftBtn_Callback(hObject, eventdata, handles)
-rawData = getRawData(handles);
+rawData = getRawData(handles, hObject);
 if rawData == -1
     msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
     return;
 end
     
 axes(handles.fftAxes);
-averageData = sgolayfilt(rawData, 3, 31);
-diffData = rawData - averageData;
-[f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
-plot(f, P1);
-title('FFT plot');
-xlabel('f (Hz)');
-ylabel('|P1(f)|');
+% averageData = sgolayfilt(rawData, 3, 31);
+% diffData = rawData - averageData;
+[fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
+% [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
+plot(fftFreqVector, P1);
+title('Complete spectrum');
+xlabel('f [Hz]');
+ylabel('|magnitude|');
+
 %------ifft test------
-axes(handles.lowFreqAxes);
+axes(handles.highFreqAxes);
 hold on;
-time_data = getIfft(f, P1, handles.LFLB, handles.LFUB);
-x = linspace(0, length(time_data) - 1, length(time_data));
-plot(x, time_data);
+time_data = getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB);
+t = 1:2:length(time_data)*2;
+plot(t, 275*time_data); % 275 is an arbitrary factor just so the amplitudes would match :(
 
 
 
 % --- Executes on button press in plotRawDataBtn.
 function plotRawDataBtn_Callback(hObject, eventdata, handles)
-rawData = getRawData(handles);
+rawData = getRawData(handles, hObject);
 if rawData == -1
     msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
     return;
@@ -134,10 +136,12 @@ end
 
 axes(handles.lowFreqAxes);
 hold on;
-x = linspace(0, length(rawData) - 1, length(rawData));
-plot(x, rawData);
+sampleVector = 1:length(rawData);
+rawTimeVector = sampleVector;
+plot(rawTimeVector, rawData);
 xlabel('Samples');
-ylabel('Deviation  [cm]');
+ylabel('Deviation [cm]');
+
 
 
 % --- Executes on selection change in popupmenu1.
@@ -185,19 +189,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-% --- Gets the raw data in the correct format. If the data contains NaN
-% values, -1 gets returned.
-function [data] = getRawData(handles)
-    % Get the data from the base scope and convert it to an array (uiimport
-    % uses table as standard).
-    data = table2array(evalin('base', handles.baseFileName));
-    
-    % If the data contains NaN values, return -1.
-    if any(isnan(data) == 1)
-    data = -1;
-end
-
-
 
 function LFLBound_Callback(hObject, eventdata, handles)
 % hObject    handle to LFLBound (see GCBO)
@@ -218,7 +209,6 @@ function LFLBound_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 
 function LFUBound_Callback(hObject, eventdata, handles)
@@ -243,7 +233,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function HFLBound_Callback(hObject, eventdata, handles)
 % hObject    handle to HFLBound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -266,7 +255,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function HLFUBound_Callback(hObject, eventdata, handles)
 % hObject    handle to HLFUBound (see GCBO)
 handles.HFUB = str2double(get(hObject, 'String'));
@@ -285,3 +273,31 @@ function HLFUBound_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Gets the raw data in the correct format. If the data contains NaN
+% values, -1 gets returned.
+function [data] = getRawData(handles, hObject)
+%     % Get the data from the base scope and convert it to an array (uiimport
+%     % uses table as standard).
+%     data = table2array(evalin('base', handles.baseFileName));
+%     
+%     % If the data contains NaN values, return -1.
+%     if any(isnan(data) == 1)
+%     data = -1;
+    
+
+
+    % SAMPLE DATA (two sines: 50Hz and 120Hz)
+    Fs = 250;            % Sampling frequency                    
+    T = 1/Fs;             % Sampling period       
+    L = 500;             % Length of signal
+    t = (0:L-1)*T;        % Time vector
+    window = 4;
+
+    S = 0.7*sin(2*pi*50*t) + sin(2*pi*120*t);
+    data = S;% + 2*randn(size(t));
+    
+    handles.F_s = 250;
+    guidata(hObject, handles);
+% end
