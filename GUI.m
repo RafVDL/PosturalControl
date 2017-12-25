@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 13-Dec-2017 12:31:23
+% Last Modified by GUIDE v2.5 19-Dec-2017 17:21:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -96,13 +96,15 @@ guidata(hObject, handles);
 
 % --- Executes on button press in plotFftBtn.
 function plotFftBtn_Callback(hObject, eventdata, handles)
-% hObject    handle to plotFftBtn (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles.steps = table2array(evalin('base', handles.baseFileName));
+rawData = getRawData(handles);
+if rawData == -1
+    msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
+    return;
+end
+    
 axes(handles.fftAxes);
-averageData = sgolayfilt(handles.steps, 3, 31);
-diffData = handles.steps - averageData;
+averageData = sgolayfilt(rawData, 3, 31);
+diffData = rawData - averageData;
 [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
 plot(f, P1);
 title('FFT plot');
@@ -112,13 +114,15 @@ ylabel('|P1(f)|');
 
 % --- Executes on button press in plotRawDataBtn.
 function plotRawDataBtn_Callback(hObject, eventdata, handles)
-% hObject    handle to plotRawDataBtn (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles.rawData = table2array(evalin('base', handles.baseFileName));
-axes(handles.rawDataAxes);
-x = linspace(0, length(handles.rawData) - 1, length(handles.rawData));
-plot(x, handles.rawData);
+rawData = getRawData(handles);
+if rawData == -1
+    msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
+    return;
+end
+
+axes(handles.lowFreqAxes);
+x = linspace(0, length(rawData) - 1, length(rawData));
+plot(x, rawData);
 
 
 % --- Executes on selection change in popupmenu1.
@@ -161,6 +165,107 @@ function popupmenu1_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Gets the raw data in the correct format. If the data contains NaN
+% values, -1 gets returned.
+function [data] = getRawData(handles)
+    % Get the data from the base scope and convert it to an array (uiimport
+    % uses table as standard).
+    data = table2array(evalin('base', handles.baseFileName));
+    
+    % If the data contains NaN values, return -1.
+    if any(isnan(data) == 1)
+    data = -1;
+end
+
+
+
+function LFLBound_Callback(hObject, eventdata, handles)
+% hObject    handle to LFLBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.LFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function LFLBound_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to LFLBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function LFUBound_Callback(hObject, eventdata, handles)
+% hObject    handle to LFUBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.LFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function LFUBound_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to LFUBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function HFLBound_Callback(hObject, eventdata, handles)
+% hObject    handle to HFLBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.HFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function HFLBound_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HFLBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function HLFUBound_Callback(hObject, eventdata, handles)
+% hObject    handle to HLFUBound (see GCBO)
+handles.HFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function HLFUBound_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HLFUBound (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
