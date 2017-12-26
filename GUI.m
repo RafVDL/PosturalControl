@@ -112,17 +112,17 @@ axes(handles.fftAxes);
 % diffData = rawData - averageData;
 [fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
 % [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
-plot(fftFreqVector, abs(P1));
+plot(fftFreqVector, abs(P1/length(rawData)));
 title('Complete spectrum');
 xlabel('f [Hz]');
 ylabel('|magnitude|');
 
 %------ifft test------
-axes(handles.highFreqAxes);
+axes(handles.lowFreqAxes);
 hold on;
 time_data = getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB);
 t = 1:2:length(time_data)*2;
-plot(t, 275*time_data); % 275 is an arbitrary factor just so the amplitudes would match :(
+plot(t, time_data/2);
 
 
 

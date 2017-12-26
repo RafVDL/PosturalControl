@@ -22,7 +22,7 @@ function [fftFreqVector, P1] = getfft(data, Fs, window)
     end
     
     Y = fft(windowData, L);
-    P2 = Y/L;                    % P2: Two-sided spectrum
+    P2 = Y;                    % P2: Two-sided spectrum
     P1 = P2(1:L/2+1);                 % P1: Single-sided spectrum
     P1(2:end-1) = 2*P1(2:end-1);
     fftFreqVector = Fs*(0:(L/2))/L;   % frequency vector
