@@ -126,17 +126,17 @@ axes(handles.lowFreqAxes);
 hold on;
 time_data = getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB);
 t = 1:2:length(time_data)*2;
-plot(t, time_data/2);
+plot(t, time_data/2, '-', 'DisplayName', 'Low frequency');
+legend;
 title('Low frequency plot');
 xlabel('Samples');
 ylabel('Deviation [mm]');
-legend('Low frequency');
 
 axes(handles.highFreqAxes);
 hold on;
 time_data = getIfft(fftFreqVector, P1, handles.HFLB, handles.HFUB);
 t = 1:2:length(time_data)*2;
-plot(t, time_data/2);
+plot(t, time_data/2, '-', 'DisplayName', 'High frequency');
 title('High frequency plot');
 xlabel('Samples');
 legend('High frequency');
@@ -153,11 +153,11 @@ axes(handles.lowFreqAxes);
 hold on;
 sampleVector = 1:length(rawData);
 rawTimeVector = sampleVector;
-plot(rawTimeVector, rawData);
+plot(rawTimeVector, rawData, '-', 'DisplayName', 'Original data');
+legend;
 title('Low frequency plot');
 xlabel('Samples');
 ylabel('Deviation [mm]');
-legend('Original data');
 
 
 
