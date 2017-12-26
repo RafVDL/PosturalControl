@@ -112,7 +112,7 @@ axes(handles.fftAxes);
 % diffData = rawData - averageData;
 [fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
 % [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
-plot(fftFreqVector, P1);
+plot(fftFreqVector, abs(P1));
 title('Complete spectrum');
 xlabel('f [Hz]');
 ylabel('|magnitude|');
