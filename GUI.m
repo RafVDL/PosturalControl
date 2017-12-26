@@ -314,13 +314,13 @@ function exportBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles, 'baseFileName')
-    msgbox('No data selected yet');
+    msgbox({'No data selected.', 'Please import and analyse before exporting.'});
     return;
 end
 W = evalin('base', 'whos');
 dataIsPresent = ismember(handles.baseFileName, [W(:).name]);
 if dataIsPresent == 0
-    msgbox('No data selected yet');
+    msgbox({'No data analysed.', 'Please import and analyse before exporting.'});
     return;
 end
 comment = inputdlg('Comment:');
@@ -354,14 +354,14 @@ function [data] = getRawData(handles, hObject)
 % Check if the data actually exists
 if ~isfield(handles, 'baseFileName')
     data = -1;
-    msgbox({'No data selected, cannot plot.', 'Please select valid data.'}, 'No data');
+    msgbox({'No data selected.', 'Please select valid data to continue.'});
     return;
 end
 W = evalin('base', 'whos');
 dataIsPresent = ismember(handles.baseFileName, [W(:).name]);
 if(dataIsPresent == 0)
     data = -1;
-    msgbox({'No data selected, cannot plot.', 'Please select valid data.'}, 'No data');
+    msgbox({'No data selected.', 'Please select valid data to continue.'});
     return;
 end
 
@@ -372,7 +372,7 @@ data = table2array(evalin('base', handles.baseFileName));
 % If the data contains NaN values, return -1.
 if any(isnan(data) == 1)
     data = -1;
-    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
+    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data to continue.'}, 'Invalid data');
     return;
 end
 
