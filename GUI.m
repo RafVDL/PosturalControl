@@ -89,6 +89,10 @@ axes(handles.lowFreqAxes); cla;
 axes(handles.highFreqAxes); cla;
 
 filename = uigetfile('.xlsx');
+if(filename == 0)
+    % User hit cancel on the import window
+    return
+end
 [folder, baseFileName, extension] = fileparts(filename);
 handles.baseFileName = baseFileName(~isspace(baseFileName));
 
@@ -103,7 +107,6 @@ guidata(hObject, handles);
 function plotFftBtn_Callback(hObject, eventdata, handles)
 rawData = getRawData(handles, hObject);
 if rawData == -1
-    msgbox({'The selected data contains values that are NaN or empty cells.','Please select valid data.'}, 'Invalid data');
     return;
 end
     
@@ -136,7 +139,6 @@ plot(t, time_data/2);
 function plotRawDataBtn_Callback(hObject, eventdata, handles)
 rawData = getRawData(handles, hObject);
 if rawData == -1
-    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
     return;
 end
 
@@ -282,16 +284,27 @@ end
 
 
 % --- Gets the raw data in the correct format. If the data contains NaN
-% values, -1 gets returned.
+% values, -1 gets returned. If there is no data variable, -1 gets returned
 function [data] = getRawData(handles, hObject)
-    % Get the data from the base scope and convert it to an array (uiimport
-    % uses table as standard).
-    data = table2array(evalin('base', handles.baseFileName));
+% Check if the data actually exists
+W = evalin('base', 'whos');
+dataIsPresent = ismember('steps', [W(:).name]);
+if(dataIsPresent == 0)
+    data = -1;
+    msgbox({'No data selected, cannot plot.', 'Please select valid data.'}, 'No data');
+    return;
+end
 
-    % If the data contains NaN values, return -1.
-    if any(isnan(data) == 1)
-        data = -1;
-    end
+% Get the data from the base scope and convert it to an array (uiimport
+% uses table as standard).
+data = table2array(evalin('base', handles.baseFileName));
+
+% If the data contains NaN values, return -1.
+if any(isnan(data) == 1)
+    data = -1;
+    msgbox({'The selected data contains values that are NaN or empty cells.', 'Please select valid data.'}, 'Invalid data');
+    return;
+end
 
 %     %SAMPLE DATA (two sines: 50Hz and 120Hz)
 %     Fs = 1000;            % Sampling frequency
