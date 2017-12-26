@@ -297,14 +297,41 @@ function exportBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to exportBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if ~isfield(handles, 'baseFileName')
+    msgbox('No data selected yet');
+    return;
+end
+W = evalin('base', 'whos');
+dataIsPresent = ismember(handles.baseFileName, [W(:).name]);
+if dataIsPresent == 0
+    msgbox('No data selected yet');
+    return;
+end
+comment = inputdlg('Comment:');
+if isempty(comment)
+    return;
+end
+filename = uiputfile({'*.xlsx', '*.xls'}, 'Export to file...');
+if isequal(filename,0)
+   return; 
+end
+rawData = getRawData(handles, hObject);
+[fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
+savedata(filename, rawData, getIfft(fftFreqVector, P1, handles.HFLB, handles.HFUB), getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB), handles.selectedWindow, comment, handles.LFLB, handles.LFUB, handles.HFLB, handles.HFUB);
+msgbox('Data export complete!');
 
 
 % --- Gets the raw data in the correct format. If the data contains NaN
 % values, -1 gets returned. If there is no data variable, -1 gets returned
 function [data] = getRawData(handles, hObject)
 % Check if the data actually exists
+if ~isfield(handles, 'baseFileName')
+    data = -1;
+    msgbox({'No data selected, cannot plot.', 'Please select valid data.'}, 'No data');
+    return;
+end
 W = evalin('base', 'whos');
-dataIsPresent = ismember('steps', [W(:).name]);
+dataIsPresent = ismember(handles.baseFileName, [W(:).name]);
 if(dataIsPresent == 0)
     data = -1;
     msgbox({'No data selected, cannot plot.', 'Please select valid data.'}, 'No data');
