@@ -327,7 +327,7 @@ comment = inputdlg('Comment:');
 if isempty(comment)
     return;
 end
-filename = uiputfile({'*.xlsx', '*.xls'}, 'Export to file...');
+filename = uiputfile({'*.xlsx'}, 'Export to file...');
 if isequal(filename,0)
    return; 
 end
