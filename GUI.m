@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 26-Dec-2017 16:31:42
+% Last Modified by GUIDE v2.5 26-Dec-2017 16:40:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -103,36 +103,43 @@ handles.F_s = xlsread(filename, '', 'A9');
 guidata(hObject, handles);
 
 
-% --- Executes on button press in plotFftBtn.
-function plotFftBtn_Callback(hObject, eventdata, handles)
+% --- Executes on button press in analyseBtn.
+function analyseBtn_Callback(hObject, eventdata, handles)
 rawData = getRawData(handles, hObject);
 if rawData == -1
     return;
 end
-    
+
+%------fft------
 axes(handles.fftAxes);
 % averageData = sgolayfilt(rawData, 3, 31);
 % diffData = rawData - averageData;
 [fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
 % [f, P1] = getfft(diffData, handles.F_s, handles.selectedWindow);
 plot(fftFreqVector, abs(P1/length(rawData)));
-title('Complete spectrum');
+title('Frequency spectrum');
 xlabel('f [Hz]');
-ylabel('|magnitude|');
+ylabel('Magnitude [mm]');
 
-%------ifft test------
+%------ifft------
 axes(handles.lowFreqAxes);
 hold on;
 time_data = getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB);
 t = 1:2:length(time_data)*2;
 plot(t, time_data/2);
+title('Low frequency plot');
+xlabel('Samples');
+ylabel('Deviation [mm]');
+legend('Low frequency');
 
 axes(handles.highFreqAxes);
 hold on;
 time_data = getIfft(fftFreqVector, P1, handles.HFLB, handles.HFUB);
 t = 1:2:length(time_data)*2;
 plot(t, time_data/2);
-
+title('High frequency plot');
+xlabel('Samples');
+legend('High frequency');
 
 
 % --- Executes on button press in plotRawDataBtn.
@@ -147,8 +154,10 @@ hold on;
 sampleVector = 1:length(rawData);
 rawTimeVector = sampleVector;
 plot(rawTimeVector, rawData);
+title('Low frequency plot');
 xlabel('Samples');
-ylabel('Deviation [cm]');
+ylabel('Deviation [mm]');
+legend('Original data');
 
 
 

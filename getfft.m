@@ -1,6 +1,5 @@
 function [fftFreqVector, P1] = getfft(data, Fs, window)
-    Ts = 1/Fs;              % Sampling period
-    L = length(data);       % Length of the time domain signal [s]
+    L = length(data);       % Length of the time domain signal
     
     switch (window)
         case Window.Bartlett
@@ -22,8 +21,13 @@ function [fftFreqVector, P1] = getfft(data, Fs, window)
     end
     
     Y = fft(windowData, L);
-    P2 = Y;                    % P2: Two-sided spectrum
-    P1 = P2(1:L/2+1);                 % P1: Single-sided spectrum
-    P1(2:end-1) = 2*P1(2:end-1);
-    fftFreqVector = Fs*(0:(L/2))/L;   % frequency vector
+    if(rem(L,2) == 0)                   % Fft of even amount of points => (f0 and fN/2+1 are unique)
+        P1 = Y(1:L/2+1);                % P1 is single side of spectrum
+        P1(2:end-1) = 2*P1(2:end-1);
+    else                                % Fft of even amount of points => (f0 is unique)
+        P1 = Y(1:round(L/2));           % P1 is single side of spectrum
+        P1(2:end) = 2*P1(2:end);
+    end
+
+    fftFreqVector = Fs*(0:(L/2))/L;     % frequency vector
 end
