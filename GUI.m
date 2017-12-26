@@ -124,6 +124,12 @@ time_data = getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB);
 t = 1:2:length(time_data)*2;
 plot(t, time_data/2);
 
+axes(handles.highFreqAxes);
+hold on;
+time_data = getIfft(fftFreqVector, P1, handles.HFLB, handles.HFUB);
+t = 1:2:length(time_data)*2;
+plot(t, time_data/2);
+
 
 
 % --- Executes on button press in plotRawDataBtn.
@@ -278,26 +284,24 @@ end
 % --- Gets the raw data in the correct format. If the data contains NaN
 % values, -1 gets returned.
 function [data] = getRawData(handles, hObject)
-%     % Get the data from the base scope and convert it to an array (uiimport
-%     % uses table as standard).
-%     data = table2array(evalin('base', handles.baseFileName));
-%     
-%     % If the data contains NaN values, return -1.
-%     if any(isnan(data) == 1)
-%     data = -1;
-    
+    % Get the data from the base scope and convert it to an array (uiimport
+    % uses table as standard).
+    data = table2array(evalin('base', handles.baseFileName));
 
+    % If the data contains NaN values, return -1.
+    if any(isnan(data) == 1)
+        data = -1;
+    end
 
-    % SAMPLE DATA (two sines: 50Hz and 120Hz)
-    Fs = 1000;            % Sampling frequency                    
-    T = 1/Fs;             % Sampling period       
-    L = 500;             % Length of signal
-    t = (0:L-1)*T;        % Time vector
-    window = 4;
-
-    S = 0.7*sin(2*pi*50*t) + sin(2*pi*120*t);
-    data = S;% + 2*randn(size(t));
-    
-    handles.F_s = 1000;
-    guidata(hObject, handles);
-% end
+%     %SAMPLE DATA (two sines: 50Hz and 120Hz)
+%     Fs = 1000;            % Sampling frequency
+%     T = 1/Fs;             % Sampling period
+%     L = 500;             % Length of signal
+%     t = (0:L-1)*T;        % Time vector
+%     window = 4;
+% 
+%     S = 0.7*sin(2*pi*50*t) + sin(2*pi*120*t);
+%     data = S;% + 2*randn(size(t));
+% 
+%     handles.F_s = 1000;
+%     guidata(hObject, handles);
