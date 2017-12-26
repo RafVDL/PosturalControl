@@ -227,6 +227,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+handles.LFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
+
 
 function LFUBound_Callback(hObject, eventdata, handles)
 % hObject    handle to LFUBound (see GCBO)
@@ -248,6 +252,10 @@ function LFUBound_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+handles.LFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 
 function HFLBound_Callback(hObject, eventdata, handles)
@@ -271,8 +279,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+handles.HFLB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
-function HLFUBound_Callback(hObject, eventdata, handles)
+
+function HFUBound_Callback(hObject, eventdata, handles)
 % hObject    handle to HLFUBound (see GCBO)
 handles.HFUB = str2double(get(hObject, 'String'));
 % Save the changes to the structure
@@ -280,7 +292,7 @@ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function HLFUBound_CreateFcn(hObject, eventdata, handles)
+function HFUBound_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to HLFUBound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -290,6 +302,10 @@ function HLFUBound_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+handles.HFUB = str2double(get(hObject, 'String'));
+% Save the changes to the structure
+guidata(hObject, handles);
 
 
 % --- Executes on button press in exportBtn.
@@ -319,6 +335,17 @@ rawData = getRawData(handles, hObject);
 [fftFreqVector, P1] = getfft(rawData, handles.F_s, handles.selectedWindow);
 savedata(filename, rawData, getIfft(fftFreqVector, P1, handles.HFLB, handles.HFUB), getIfft(fftFreqVector, P1, handles.LFLB, handles.LFUB), handles.selectedWindow, comment, handles.LFLB, handles.LFUB, handles.HFLB, handles.HFUB);
 msgbox('Data export complete!');
+
+
+% --- Executes on button press in clearGraphsBtn.
+function clearGraphsBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to clearGraphsBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+axes(handles.fftAxes); cla;
+axes(handles.lowFreqAxes); cla;
+axes(handles.highFreqAxes); cla;
 
 
 % --- Gets the raw data in the correct format. If the data contains NaN
