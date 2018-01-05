@@ -171,26 +171,43 @@ function popupmenu1_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu1
 str = get(hObject, 'String');
 val = get(hObject, 'Value');
+
+axes(handles.windowAxes);
+displayLength = 64;
+x = 0:displayLength - 1;
 switch str{val}
     case 'None'
         handles.selectedWindow = Window.None;
+        cla;
     case 'Bartlett'
         handles.selectedWindow = Window.Bartlett;
+        plot(x, bartlett(displayLength));
     case 'Blackman'
         handles.selectedWindow = Window.Blackman;
+        plot(x, blackman(displayLength));
     case 'Boxcar'
         handles.selectedWindow = Window.Boxcar;
+        plot(x, boxcar(displayLength));
     case 'Hamming'
         handles.selectedWindow = Window.Hamming;
+        plot(x, hamming(displayLength));
     case 'Hann'
         handles.selectedWindow = Window.Hann;
+        plot(x, hann(displayLength));
     case 'Taylor'
         handles.selectedWindow = Window.Taylor;
+        plot(x, taylorwin(displayLength));
     case 'Triangle'
         handles.selectedWindow = Window.Triang;
+        plot(x, triang(displayLength));
     otherwise
         handles.selectedWindow = Window.None;
+        cla;
 end
+axis([0 displayLength -inf inf]);
+set(gca, 'xtick', []);
+set(gca, 'ytick', []);
+
 guidata(hObject, handles);
 
 
